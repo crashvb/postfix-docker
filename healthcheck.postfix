@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -e
+set -o pipefail
+
+log "Checking if $(basename $0) is healthy ..."
+
+exec 3<> /dev/tcp/localhost/465
+head --lines=1 <&3 | grep --quiet "220 .* ESMTP Postfix"
+rc=$?
+echo QUIT >&3
+
+exit $rc
+

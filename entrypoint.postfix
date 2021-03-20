@@ -1,0 +1,116 @@
+#!/bin/bash
+
+set -e
+
+# Configure: postfix
+if [[ ! -e $EP_RUN ]] ; then
+	log "Configuring $(basename $0) for first run ..."
+
+	# Note: Key size must be >= 3072 for "HIGH" security:
+	export POSTFIX_CERT_DAYS=${POSTFIX_CERT_DAYS:-30}
+	export POSTFIX_KEY_SIZE=${POSTFIX_KEY_SIZE:-4096}
+	export POSTFIX_MAILNAME=${POSTFIX_MAILNAME:-$HOSTNAME}
+
+	# Generate keypairs ...
+	if [[ -e $EP_SECRETS_ROOT/postfixca.crt && -e $EP_SECRETS_ROOT/postfix.crt && -e $EP_SECRETS_ROOT/postfix.key ]] ; then
+		log "Importing postfixca.crt, postfix.crt, and postfix.key from secrets ..."
+	else
+		log "Generating postfixca.crt, postfix.crt, and postfix.key in secrets ..."
+
+		log "	certificate authority"
+		openssl genrsa \
+			-out /dev/shm/postfixca.key \
+			$POSTFIX_KEY_SIZE
+		openssl req \
+			-days $POSTFIX_CERT_DAYS \
+			-key /dev/shm/postfixca.key \
+			-new \
+			-nodes \
+			-out $EP_SECRETS_ROOT/postfixca.crt \
+			-sha256 \
+			-subj "/CN=postfix ca" \
+			-x509
+
+		log "	server certificate"
+		openssl genrsa \
+			-out $EP_SECRETS_ROOT/postfix.key \
+			$POSTFIX_KEY_SIZE
+		openssl req \
+			-days $POSTFIX_CERT_DAYS \
+			-key $EP_SECRETS_ROOT/postfix.key \
+			-new \
+			-nodes \
+			-out /dev/shm/postfix.csr \
+			-sha256 \
+			-subj "/CN=postfix server"
+		openssl x509 \
+			-CA $EP_SECRETS_ROOT/postfixca.crt \
+			-CAkey /dev/shm/postfixca.key \
+			-CAcreateserial \
+			-days $POSTFIX_CERT_DAYS \
+			-in /dev/shm/postfix.csr \
+			-out $EP_SECRETS_ROOT/postfix.crt \
+			-req \
+			-sha256
+		# Note: http://www.postfix.org/TLS_README.html#server_cert_key
+		cat $EP_SECRETS_ROOT/postfix.crt >> $EP_SECRETS_ROOT/postfixca.crt
+		mv $EP_SECRETS_ROOT/postfixca.crt $EP_SECRETS_ROOT/postfix.crt
+
+		rm /dev/shm/{postfixca.key,postfix.csr} $EP_SECRETS_ROOT/postfixca.srl
+
+	fi
+	install --group=ssl-cert --mode=0640 --owner=root $EP_SECRETS_ROOT/postfix.key /etc/ssl/private/
+	install --group=root --mode=0644 --owner=root $EP_SECRETS_ROOT/postfix{,ca}.crt /etc/ssl/certs/
+
+	ln --symbolic /etc/ssl/certs/postfixca.crt /usr/share/ca-certificates/
+	echo postfixca.crt >> /etc/ca-certificates.conf
+	update-ca-certificates
+
+	# Volume initialization
+	if [[ ! -f $POSTFIX_CONFIG/main.cf ]] ; then
+		log "Initializing data volume ..."
+		cp --no-clobber --recursive /usr/local/share/postfix/config/* $POSTFIX_CONFIG/
+
+		log "Adapting configuration files ..."
+		log "	main.cf"
+		postconf -c $POSTFIX_CONFIG -e "myhostname = $(hostname --fqdn)"
+
+		# Note: mailname must be there first, or postconf will crash
+		if [[ -n $POSTFIX_MAILNAME ]] ; then
+			log "	mailname"
+			echo "$POSTFIX_MAILNAME" > $POSTFIX_CONFIG/mailname
+		fi
+
+		if [[ -n $POSTFIX_ALIASES ]] ; then
+			log "	aliases"
+			echo "$POSTFIX_ALIASES" > $POSTFIX_CONFIG/aliases
+			postalias $POSTFIX_CONFIG/aliases
+		fi
+		if [[ -n $POSTFIX_MYDESTINATION ]] ; then
+			log "	mydestination"
+			echo "$POSTFIX_MYDESTINATION" > $POSTFIX_CONFIG/mydestination
+		fi
+
+		# Handle maps ...
+		for var in POSTFIX_VIRTUAL_ALIAS_MAPS POSTFIX_VIRTUAL_MAILBOX_DOMAINS POSTFIX_VIRTUAL_MAILBOX_MAPS; do
+			if [[ "X$var" != "X" ]] ; then
+				name=${var,,}
+				name=${name#"postfix_"}
+				log "	$name"
+				echo "${!var}" > $POSTFIX_CONFIG/$name
+				postconf -c $POSTFIX_CONFIG -e "$name = hash:$POSTFIX_CONFIG/$name"
+				postmap $POSTFIX_CONFIG/$name
+			fi
+		done
+
+		sort --output=$POSTFIX_CONFIG/main.cf $POSTFIX_CONFIG/main.cf
+
+		log "Applying ownership and permissions ..."
+		find $POSTFIX_CONFIG \( \! -user root -o \! -group root \) -exec chown root:root {} \;
+	else
+		log "Skipping data volume initialization ..."
+	fi
+
+	find $POSTFIX_VMAIL \( \! -user vmail -o \! -group vmail \) -exec chown vmail:vmail {} \;
+fi
+

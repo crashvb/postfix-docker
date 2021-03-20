@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -e
+
+log "Generating virtual user ..."
+# TODO: Do setup ...
+
+log "Starting supervisord ..."
+/usr/bin/supervisord --configuration=/etc/supervisor/supervisord.conf &
+sleep 1
+while ! grep 'regeneration completed$' /var/log/supervisor/postfix-stdout*.log > /dev/null ; do
+	log "Waiting for postfix ..."
+	sleep 1
+done
+
+log "Testing SMTP ..."
+postfix-test-smtp "${user_name}" "${user_password}" "${user_mailbox}"
+
+log "--- Test Passed ---"
+exit 0
