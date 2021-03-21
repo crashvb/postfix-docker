@@ -16,6 +16,7 @@ The embedded entrypoint script is located at `/etc/entrypoint.d/postfix` and per
  | Variable | Default Value | Description |
  | -------- | ------------- | ----------- |
  | POSTFIX_ALIASES | | Content of `POSTFIX_CONFIG`/aliases; also `/etc/aliases`. |
+ | POSTFIX_AUTH_PATH | | If defined, the dovecot auth service will be consumed at this address. |
  | POSTFIX_CERT_DAYS | 30 | Validity period of any generated PKI certificates. |
  | POSTFIX_KEY_SIZE | 4096 | Key size of any generated PKI keys. |
  | POSTFIX_MAILNAME | _hostname_ | The mail name of the instance. |

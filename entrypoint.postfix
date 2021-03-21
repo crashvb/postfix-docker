@@ -86,6 +86,17 @@ if [[ ! -e $EP_RUN ]] ; then
 			echo "$POSTFIX_ALIASES" > $POSTFIX_CONFIG/aliases
 			postalias $POSTFIX_CONFIG/aliases
 		fi
+
+		if [[ -n $POSTFIX_AUTH_PATH ]] ; then
+			log "	smtpd_sasl_*"
+			postconf -c $POSTFIX_CONFIG -e \
+				"smtpd_sasl_auth_enable = yes" \
+				"smtpd_sasl_authenticated_header = yes" \
+				"smtpd_sasl_path = inet:$POSTFIX_AUTH_PATH" \
+				"smtpd_sasl_security_options = noanonymous" \
+				"smtpd_sasl_type = dovecot"
+		fi
+
 		if [[ -n $POSTFIX_MYDESTINATION ]] ; then
 			log "	mydestination"
 			echo "$POSTFIX_MYDESTINATION" > $POSTFIX_CONFIG/mydestination

@@ -1,4 +1,4 @@
-FROM crashvb/supervisord:202002211640
+FROM crashvb/supervisord:202103210039
 LABEL maintainer "Richard Davis <crashvb@gmail.com>"
 
 # Install packages, download files ...
@@ -15,13 +15,14 @@ RUN groupadd -g ${POSTFIX_VGID} ${POSTFIX_VNAME} && \
 	postconf -c ${POSTFIX_CONFIG} -e \
 		"lmtp_host_lookup = native" \
 		"local_transport = virtual" \
+		"maillog_file = /dev/stdout" \
 		"mydestination = pcre:${POSTFIX_CONFIG}/mydestination" \
 		"myorigin = ${POSTFIX_CONFIG}/mailname" \
 		"smtpd_tls_auth_only = yes" \
 		"smtpd_tls_CAfile = /etc/ssl/certs/postfixca.crt" \
 		"smtpd_tls_cert_file = /etc/ssl/certs/postfix.crt" \
 		"smtpd_tls_key_file = /etc/ssl/private/postfix.key" \
-		"smtpd_tls_mandatory_protocols = >=TLSv1.2" \
+		"smtpd_tls_mandatory_protocols = !SSLv2,!SSLv3,!TLSv1,!TLSv1.1" \
 		"smtpd_tls_received_header = yes" \
 		"smtpd_tls_security_level = encrypt" \
 		"virtual_gid_maps = static:${POSTFIX_VGID}" \
@@ -34,7 +35,7 @@ RUN groupadd -g ${POSTFIX_VGID} ${POSTFIX_VNAME} && \
 		rm --force /tmp/main.cf && \
 	sed --expression="/^smtp      inet/s/^/#/" \
 		--expression="/^#smtps /s/^#//" \
-		--expression="/^smtps /{n;s/^#//}" \
+		--expression="/^smtps /,+3 s/^#//" \
 		--in-place=.dist ${POSTFIX_CONFIG}/master.cf && \
 	mv /etc/aliases* ${POSTFIX_CONFIG} && \
 	echo "localhost" > ${POSTFIX_CONFIG}/mailname && \
