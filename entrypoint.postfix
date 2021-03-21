@@ -104,7 +104,7 @@ if [[ ! -e $EP_RUN ]] ; then
 
 		# Handle maps ...
 		for var in POSTFIX_VIRTUAL_ALIAS_MAPS POSTFIX_VIRTUAL_MAILBOX_DOMAINS POSTFIX_VIRTUAL_MAILBOX_MAPS; do
-			if [[ "X$var" != "X" ]] ; then
+			if [[ "X${!var}" != "X" ]] ; then
 				name=${var,,}
 				name=${name#"postfix_"}
 				log "	$name"
