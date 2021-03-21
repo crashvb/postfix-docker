@@ -21,6 +21,7 @@ RUN groupadd -g ${POSTFIX_VGID} ${POSTFIX_VNAME} && \
 		"smtpd_tls_auth_only = yes" \
 		"smtpd_tls_CAfile = /etc/ssl/certs/postfixca.crt" \
 		"smtpd_tls_cert_file = /etc/ssl/certs/postfix.crt" \
+		"smtpd_tls_exclude_ciphers = aNULL,eNULL,EXPORT,DES,3DES,RC2,RC4,MD5,PSK,SRP,DSS,AECDH,ADH,SEED" \
 		"smtpd_tls_key_file = /etc/ssl/private/postfix.key" \
 		"smtpd_tls_mandatory_protocols = !SSLv2,!SSLv3,!TLSv1,!TLSv1.1" \
 		"smtpd_tls_received_header = yes" \
@@ -34,7 +35,7 @@ RUN groupadd -g ${POSTFIX_VGID} ${POSTFIX_VNAME} && \
 		cat /tmp/main.cf > ${POSTFIX_CONFIG}/main.cf && \
 		rm --force /tmp/main.cf && \
 	sed --expression="/^smtp      inet/s/^/#/" \
-		--expression="/^#smtps /s/^#//" \
+		--expression="/^#smtps /{s/^#//;s/y/-/}" \
 		--expression="/^smtps /,+3 s/^#//" \
 		--in-place=.dist ${POSTFIX_CONFIG}/master.cf && \
 	mv /etc/aliases* ${POSTFIX_CONFIG} && \
