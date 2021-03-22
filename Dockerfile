@@ -54,4 +54,4 @@ ADD healthcheck.postfix /etc/healthcheck.d/postfix
 
 EXPOSE 25/tcp 465/tcp 587/tcp
 
-VOLUME /var/spool/postfix ${POSTFIX_CONFIG} ${POSTFIX_VMAIL}
+VOLUME ${POSTFIX_CONFIG} ${POSTFIX_VMAIL}
