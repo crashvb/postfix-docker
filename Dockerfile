@@ -23,6 +23,7 @@ RUN groupadd -g ${POSTFIX_VGID} ${POSTFIX_VNAME} && \
 		"smtpd_tls_cert_file = /etc/ssl/certs/postfix.crt" \
 		"smtpd_tls_exclude_ciphers = aNULL,eNULL,EXPORT,DES,3DES,RC2,RC4,MD5,PSK,SRP,DSS,AECDH,ADH,SEED" \
 		"smtpd_tls_key_file = /etc/ssl/private/postfix.key" \
+		"smtp_tls_loglevel = 4" \
 		"smtpd_tls_mandatory_protocols = !SSLv2,!SSLv3,!TLSv1,!TLSv1.1" \
 		"smtpd_tls_received_header = yes" \
 		"smtpd_tls_security_level = encrypt" \
@@ -30,6 +31,7 @@ RUN groupadd -g ${POSTFIX_VGID} ${POSTFIX_VNAME} && \
 		"virtual_uid_maps = static:${POSTFIX_VUID}" \
 		"virtual_mailbox_base = ${POSTFIX_VMAIL}" \
 		"virtual_minimum_uid = ${POSTFIX_VUID}" && \
+	postconf -# "smtp_tls_loglevel" && \
 	postconf -c ${POSTFIX_CONFIG} -n | \
 		sort > /tmp/main.cf && \
 		cat /tmp/main.cf > ${POSTFIX_CONFIG}/main.cf && \

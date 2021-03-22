@@ -5,10 +5,16 @@ set -o pipefail
 
 log "Checking if $(basename $0) is healthy ..."
 
-exec 3<> /dev/tcp/localhost/465
-head --lines=1 <&3 | grep --quiet "220 .* ESMTP Postfix"
+# SMTP health checking (service must be enabled)
+# exec 3<> /dev/tcp/localhost/25
+# head --lines=1 <&3 | grep --quiet "220 .* ESMTP Postfix"
+# rc=$?
+# echo QUIT >&3
+
+# SMTPS healt checking
+(sleep 0.5; echo "EHLO $(basename $0)"; sleep 0.5; echo -n "QUIT") | \
+	openssl s_client -crlf -connect localhost:465
 rc=$?
-echo QUIT >&3
 
 exit $rc
 

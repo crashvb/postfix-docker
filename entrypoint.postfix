@@ -105,11 +105,14 @@ if [[ ! -e $EP_RUN ]] ; then
 		# Handle maps ...
 		for var in POSTFIX_VIRTUAL_ALIAS_MAPS POSTFIX_VIRTUAL_MAILBOX_DOMAINS POSTFIX_VIRTUAL_MAILBOX_MAPS; do
 			if [[ "X${!var}" != "X" ]] ; then
+				tvar="${var}_TYPE"
+				tval=${!tvar}
 				name=${var,,}
 				name=${name#"postfix_"}
-				log "	$name"
+				log "	$name [type=$tval]"
+				[[ "X${tval}" != "X" ]] && tval="$tval:"
 				echo "${!var}" > $POSTFIX_CONFIG/$name
-				postconf -c $POSTFIX_CONFIG -e "$name = hash:$POSTFIX_CONFIG/$name"
+				postconf -c $POSTFIX_CONFIG -e "$name = $tval$POSTFIX_CONFIG/$name"
 				postmap $POSTFIX_CONFIG/$name
 			fi
 		done
