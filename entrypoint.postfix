@@ -36,7 +36,6 @@ if [[ ! -e $EP_RUN ]] ; then
 			-out $EP_SECRETS_ROOT/postfix.key \
 			$POSTFIX_KEY_SIZE
 		openssl req \
-			-days $POSTFIX_CERT_DAYS \
 			-key $EP_SECRETS_ROOT/postfix.key \
 			-new \
 			-nodes \
