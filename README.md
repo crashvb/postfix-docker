@@ -50,7 +50,12 @@ The embedded healthcheck script is located at `/etc/healthcheck.d/postfix` and p
 │  │  └─ postfix
 │  └─ healthcheck.d/
 │     └─ postfix
-└─ usr/
+├─ run/
+│  └─ secrets/
+│     ├─ postfix.crt
+│     ├─ postfix.key
+│     └─ postfixca.crt
+├─ usr/
 │  └─ local/
 │     └─ bin/
 │        └─ postfix-test-smtp

@@ -6,15 +6,16 @@ set -e
 if [[ ! -e $EP_RUN ]] ; then
 	log "Configuring $(basename $0) for first run ..."
 
-	# Note: Key size must be >= 3072 for "HIGH" security:
-	export POSTFIX_CERT_DAYS=${POSTFIX_CERT_DAYS:-30}
-	export POSTFIX_KEY_SIZE=${POSTFIX_KEY_SIZE:-4096}
 	export POSTFIX_MAILNAME=${POSTFIX_MAILNAME:-$HOSTNAME}
 
 	# Generate keypairs ...
 	if [[ -e $EP_SECRETS_ROOT/postfixca.crt && -e $EP_SECRETS_ROOT/postfix.crt && -e $EP_SECRETS_ROOT/postfix.key ]] ; then
 		log "Importing postfixca.crt, postfix.crt, and postfix.key from secrets ..."
 	else
+		# Note: Key size must be >= 3072 for "HIGH" security:
+		export POSTFIX_CERT_DAYS=${POSTFIX_CERT_DAYS:-30}
+		export POSTFIX_KEY_SIZE=${POSTFIX_KEY_SIZE:-4096}
+
 		log "Generating postfixca.crt, postfix.crt, and postfix.key in secrets ..."
 
 		log "	certificate authority"
@@ -103,17 +104,17 @@ if [[ ! -e $EP_RUN ]] ; then
 
 		# Handle maps ...
 		for var in POSTFIX_VIRTUAL_ALIAS_MAPS POSTFIX_VIRTUAL_MAILBOX_DOMAINS POSTFIX_VIRTUAL_MAILBOX_MAPS; do
-			if [[ "X${!var}" != "X" ]] ; then
-				tvar="${var}_TYPE"
-				tval=${!tvar}
-				name=${var,,}
-				name=${name#"postfix_"}
-				log "	$name [type=$tval]"
-				[[ "X${tval}" != "X" ]] && tval="$tval:"
-				echo "${!var}" > $POSTFIX_CONFIG/$name
-				postconf -c $POSTFIX_CONFIG -e "$name = $tval$POSTFIX_CONFIG/$name"
-				postmap $POSTFIX_CONFIG/$name
-			fi
+			[[ "X${!var}" != "X" ]] && continue
+
+			tvar="${var}_TYPE"
+			tval=${!tvar}
+			name=${var,,}
+			name=${name#"postfix_"}
+			log "	$name [type=$tval]"
+			[[ "X${tval}" != "X" ]] && tval="$tval:"
+			echo "${!var}" > $POSTFIX_CONFIG/$name
+			postconf -c $POSTFIX_CONFIG -e "$name = $tval$POSTFIX_CONFIG/$name"
+			postmap $POSTFIX_CONFIG/$name
 		done
 
 		sort --output=$POSTFIX_CONFIG/main.cf $POSTFIX_CONFIG/main.cf
@@ -124,6 +125,6 @@ if [[ ! -e $EP_RUN ]] ; then
 		log "Skipping data volume initialization ..."
 	fi
 
-	find $POSTFIX_VMAIL \( \! -user vmail -o \! -group vmail \) -exec chown vmail:vmail {} \;
+	find $POSTFIX_VMAIL \( \! -user ${POSTFIX_VNAME} -o \! -group ${POSTFIX_VNAME} \) -exec chown ${POSTFIX_VNAME}:${POSTFIX_VNAME} {} \;
 fi
 
