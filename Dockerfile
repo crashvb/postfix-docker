@@ -18,7 +18,7 @@ RUN docker-apt postfix postfix-pcre
 
 # Configure: postfix
 ENV POSTFIX_CONFIG=/etc/postfix POSTFIX_VGID=5000 POSTFIX_VMAIL=/var/mail POSTFIX_VNAME=vmail POSTFIX_VUID=5000
-ADD postfix-* test-mail /usr/local/bin/
+COPY postfix-* test-mail /usr/local/bin/
 RUN groupadd --gid=${POSTFIX_VGID} ${POSTFIX_VNAME} && \
 	useradd --create-home --gid=${POSTFIX_VGID} --home-dir=/home/${POSTFIX_VNAME} --shell=/usr/bin/nologin --uid=${POSTFIX_VUID} ${POSTFIX_VNAME} && \
 	install --directory --group=root --mode=0775 --owner=root /usr/local/share/postfix && \
@@ -58,13 +58,13 @@ RUN groupadd --gid=${POSTFIX_VGID} ${POSTFIX_VNAME} && \
 	mv ${POSTFIX_CONFIG} /usr/local/share/postfix/config
 
 # Configure: supervisor
-ADD supervisord.postfix.conf /etc/supervisor/conf.d/postfix.conf
+COPY supervisord.postfix.conf /etc/supervisor/conf.d/postfix.conf
 
 # Configure: entrypoint
-ADD entrypoint.postfix /etc/entrypoint.d/postfix
+COPY entrypoint.postfix /etc/entrypoint.d/postfix
 
 # Configure: healthcheck
-ADD healthcheck.postfix /etc/healthcheck.d/postfix
+COPY healthcheck.postfix /etc/healthcheck.d/postfix
 
 EXPOSE 25/tcp 465/tcp 587/tcp
 

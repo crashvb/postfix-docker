@@ -1,5 +1,10 @@
 # postfix-docker
 
+[![version)](https://img.shields.io/docker/v/crashvb/postfix/latest)](https://hub.docker.com/repository/docker/crashvb/postfix)
+[![image size](https://img.shields.io/docker/image-size/crashvb/postfix/latest)](https://hub.docker.com/repository/docker/crashvb/postfix)
+[![linting](https://img.shields.io/badge/linting-hadolint-yellow)](https://github.com/hadolint/hadolint)
+[![license](https://img.shields.io/github/license/crashvb/postfix-docker.svg)](https://github.com/crashvb/postfix-docker/blob/master/LICENSE.md)
+
 ## Overview
 
 This docker image contains [Postfix](https://www.postfix.org/).
@@ -15,16 +20,16 @@ The embedded entrypoint script is located at `/etc/entrypoint.d/postfix` and per
 
  | Variable | Default Value | Description |
  | -------- | ------------- | ----------- |
- | POSTFIX_ALIASES | | Content of `POSTFIX_CONFIG`/aliases; also `/etc/aliases`. |
- | POSTFIX_AUTH_PATH | | If defined, the dovecot auth service will be consumed at this address. |
- | POSTFIX_CERT_DAYS | 30 | Validity period of any generated PKI certificates. |
- | POSTFIX_KEY_SIZE | 4096 | Key size of any generated PKI keys. |
- | POSTFIX_MAILNAME | _hostname_ | The mail name of the instance. |
- | POSTFIX_MYDESTINATION | | Content of `POSTFIX_CONFIG`/mydestination. |
- | POSTFIX_VGID | 5000 | Group ID of the virtual mail user. |
- | POSTFIX_VIRTUAL_ALIAS_MAPS | | Content of `POSTFIX_CONFIG`/virtual`. |
- | POSTFIX_VIRTUAL_MAILBOX_DOMAINS | | Content of `POSTFIX_CONFIG`/virtual_mailbox_domains`. |
- | POSTFIX_VIRTUAL_MAILBOX_MAPS | | Content of `POSTFIX_CONFIG`/vmailbox`. |
+ | POSTFIX\_ALIASES | | Content of `POSTFIX_CONFIG`/aliases; also `/etc/aliases`. |
+ | POSTFIX\_AUTH\_PATH | | If defined, the dovecot auth service will be consumed at this address. |
+ | POSTFIX\_CERT\_DAYS | 30 | Validity period of any generated PKI certificates. |
+ | POSTFIX\_KEY\_SIZE | 4096 | Key size of any generated PKI keys. |
+ | POSTFIX\_MAILNAME | _hostname_ | The mail name of the instance. |
+ | POSTFIX\_MYDESTINATION | | Content of `POSTFIX_CONFIG`/mydestination. |
+ | POSTFIX\_VGID | 5000 | Group ID of the virtual mail user. |
+ | POSTFIX\_VIRTUAL\_ALIAS\_MAPS | | Content of `POSTFIX_CONFIG`/virtual`. |
+ | POSTFIX\_VIRTUAL\_MAILBOX\_DOMAINS | | Content of `POSTFIX_CONFIG`/virtual_mailbox_domains`. |
+ | POSTFIX\_VIRTUAL\_MAILBOX\_MAPS | | Content of `POSTFIX_CONFIG`/vmailbox`. |
  | POSTFIX_VUID | 5000 | User ID of the virtual mail user. |
  | POSTFIX_VMAIL | /var/mail | Virtual mail root. |
  | POSTFIX_VNAME | vmail | Name of the virtual mail user. |
