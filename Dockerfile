@@ -1,10 +1,10 @@
-FROM crashvb/supervisord:202201080446@sha256:8fe6a411bea68df4b4c6c611db63c22f32c4a455254fa322f381d72340ea7226
+FROM crashvb/supervisord:202302172130@sha256:c3ca0e25621af7c6bc594a0469d1ed763b4868f8fc5ceabaac384bd4c2496834
 ARG org_opencontainers_image_created=undefined
 ARG org_opencontainers_image_revision=undefined
 LABEL \
 	org.opencontainers.image.authors="Richard Davis <crashvb@gmail.com>" \
-	org.opencontainers.image.base.digest="sha256:8fe6a411bea68df4b4c6c611db63c22f32c4a455254fa322f381d72340ea7226" \
-	org.opencontainers.image.base.name="crashvb/supervisord:202201080446" \
+	org.opencontainers.image.base.digest="sha256:c3ca0e25621af7c6bc594a0469d1ed763b4868f8fc5ceabaac384bd4c2496834" \
+	org.opencontainers.image.base.name="crashvb/supervisord:202302172130" \
 	org.opencontainers.image.created="${org_opencontainers_image_created}" \
 	org.opencontainers.image.description="Image containing postfix." \
 	org.opencontainers.image.licenses="Apache-2.0" \
@@ -19,6 +19,7 @@ RUN docker-apt postfix postfix-pcre
 # Configure: postfix
 ENV POSTFIX_CONFIG=/etc/postfix POSTFIX_VGID=5000 POSTFIX_VMAIL=/var/mail POSTFIX_VNAME=vmail POSTFIX_VUID=5000
 COPY postfix-* test-mail /usr/local/bin/
+# hadolint ignore=DL4006
 RUN groupadd --gid=${POSTFIX_VGID} ${POSTFIX_VNAME} && \
 	useradd --create-home --gid=${POSTFIX_VGID} --home-dir=/home/${POSTFIX_VNAME} --shell=/usr/bin/nologin --uid=${POSTFIX_VUID} ${POSTFIX_VNAME} && \
 	install --directory --group=root --mode=0775 --owner=root /usr/local/share/postfix && \

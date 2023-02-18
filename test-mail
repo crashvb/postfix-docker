@@ -1,18 +1,18 @@
 #!/bin/bash
 
-set -e
+set -e -o pipefail
 
 source /usr/local/lib/entrypoint.sh
 
-if [[ -n "$2" ]] ; then
-	echo "usage: $0 [<email>]"
+if [[ -n "${2}" ]] ; then
+	echo "usage: ${0} [<email>]"
 	exit 1
 fi
 
-email=${1:-root@localhost}
+email="${1:-root@localhost}"
 
 log "Sending test message to: ${email} ..."
-tmp=$(echo "This is a test message from ${USER}@${HOSTNAME}, sent to ${email}, at $(date)" | sendmail ${email})
+tmp=$(echo "This is a test message from ${USER}@${HOSTNAME}, sent to ${email}, at $(date)" | sendmail "${email}")
 if [[ "$?" -ne "0" ]] ; then
 	echo "Unable to send test message!" >&2
 	exit 1

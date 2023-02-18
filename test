@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -e -o pipefail
 
 log "Generating virtual user ..."
 # TODO: Do setup ...
@@ -8,10 +8,13 @@ log "Generating virtual user ..."
 log "Starting supervisord ..."
 /usr/bin/supervisord --configuration=/etc/supervisor/supervisord.conf &
 sleep 1
-while ! grep 'regeneration completed$' /var/log/supervisor/postfix-stdout*.log > /dev/null ; do
+while [[ $(pgrep --count --full /usr/lib/postfix/sbin/master) -eq 0 ]] ; do
 	log "Waiting for postfix ..."
 	sleep 1
 done
+
+log "Testing Mail ..."
+test-mail
 
 log "Testing SMTP ..."
 postfix-test-smtp "${user_name}" "${user_password}" "${user_mailbox}"

@@ -22,13 +22,11 @@ The embedded entrypoint script is located at `/etc/entrypoint.d/postfix` and per
  | -------- | ------------- | ----------- |
  | POSTFIX\_ALIASES | | Content of `POSTFIX_CONFIG`/aliases; also `/etc/aliases`. |
  | POSTFIX\_AUTH\_PATH | | If defined, the dovecot auth service will be consumed at this address. |
- | POSTFIX\_CERT\_DAYS | 30 | Validity period of any generated PKI certificates. |
- | POSTFIX\_KEY\_SIZE | 4096 | Key size of any generated PKI keys. |
  | POSTFIX\_MAILNAME | _hostname_ | The mail name of the instance. |
  | POSTFIX\_MYDESTINATION | | Content of `POSTFIX_CONFIG`/mydestination. |
  | POSTFIX\_VGID | 5000 | Group ID of the virtual mail user. |
  | POSTFIX\_VIRTUAL\_ALIAS\_MAPS | | Content of `POSTFIX_CONFIG`/virtual`. |
- | POSTFIX\_VIRTUAL\_MAILBOX\_DOMAINS | | Content of `POSTFIX_CONFIG`/virtual_mailbox_domains`. |
+ | POSTFIX\_VIRTUAL\_MAILBOX\_DOMAINS | | Content of `POSTFIX\_CONFIG`/virtual_mailbox_domains`. |
  | POSTFIX\_VIRTUAL\_MAILBOX\_MAPS | | Content of `POSTFIX_CONFIG`/vmailbox`. |
  | POSTFIX_VUID | 5000 | User ID of the virtual mail user. |
  | POSTFIX_VMAIL | /var/mail | Virtual mail root. |
