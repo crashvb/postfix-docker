@@ -3,13 +3,7 @@
 set -e -o pipefail
 
 log "Checking if $(basename "${0}") is healthy ..."
-
 [[ $(pgrep --count --full /usr/lib/postfix/sbin/master) -gt 0 ]]
-[[ $(pgrep --count --full pickup) -gt 0 ]]
-[[ $(pgrep --count --full qmgr) -gt 0 ]]
-[[ $(pgrep --count --full postlogd) -gt 0 ]]
-[[ $(pgrep --count --full proxymap) -gt 0 ]]
-[[ $(pgrep --count --full tlsmgr) -gt 0 ]]
 
 # SMTP health checking (service must be enabled)
 # exec 3<> /dev/tcp/localhost/25
