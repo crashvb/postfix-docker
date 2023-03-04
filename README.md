@@ -43,8 +43,11 @@ The embedded entrypoint script is located at `/etc/entrypoint.d/postfix` and per
 │  ├─ postfix/
 │  ├─ entrypoint.d/
 │  │  └─ postfix
-│  └─ healthcheck.d/
-│     └─ postfix
+│  ├─ healthcheck.d/
+│  │  └─ postfix
+│  └─ supervisor/
+│     └─ config.d/
+│        └─ postfix.conf
 ├─ run/
 │  └─ secrets/
 │     ├─ postfix.crt
