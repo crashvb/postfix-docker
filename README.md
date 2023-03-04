@@ -33,14 +33,6 @@ The embedded entrypoint script is located at `/etc/entrypoint.d/postfix` and per
  | POSTFIX_VNAME | vmail | Name of the virtual mail user. |
 
 
-## Healthcheck Scripts
-
-### postfix
-
-The embedded healthcheck script is located at `/etc/healthcheck.d/postfix` and performs the following actions:
-
-1. Verifies that all postfix services are operational.
-
 ## Standard Configuration
 
 ### Container Layout
