@@ -21,7 +21,7 @@ ENV POSTFIX_CONFIG=/etc/postfix POSTFIX_VGID=5000 POSTFIX_VMAIL=/var/mail POSTFI
 COPY postfix-* test-mail /usr/local/bin/
 # hadolint ignore=DL4006
 RUN groupadd --gid=${POSTFIX_VGID} ${POSTFIX_VNAME} && \
-	useradd --create-home --gid=${POSTFIX_VGID} --home-dir=/home/${POSTFIX_VNAME} --shell=/usr/bin/nologin --uid=${POSTFIX_VUID} ${POSTFIX_VNAME} && \
+	useradd --create-home --gid=${POSTFIX_VGID} --home-dir=/home/${POSTFIX_VNAME} --shell=/usr/sbin/nologin --uid=${POSTFIX_VUID} ${POSTFIX_VNAME} && \
 	install --directory --group=root --mode=0775 --owner=root /usr/local/share/postfix && \
 	install --directory --group=vmail --owner=vmail ${POSTFIX_VMAIL} && \
 	cp --preserve ${POSTFIX_CONFIG}/main.cf ${POSTFIX_CONFIG}/main.cf.dist && \
